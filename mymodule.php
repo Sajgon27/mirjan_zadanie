@@ -22,6 +22,8 @@ class MyModule extends Module {
         $this->displayName = $this->trans('My module', [], 'Modules.Mymodule.Admin');
         $this->description = $this->trans('Description of my module.', [], 'Modules.Mymodule.Admin');
         $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], 'Modules.Mymodule.Admin');
+        $this->controllers = array('data');
+
 
         if (!Configuration::get('MYMODULE_NAME')) {
             $this->warning = $this->trans('No name provided', [], 'Modules.Mymodule.Admin');
@@ -97,6 +99,8 @@ public function displayForm() {
     ];
     $helper = new HelperForm();
 
+   
+
     // Module, token and currentIndex
     $helper->table = $this->table;
     $helper->name_controller = $this->name;
@@ -115,8 +119,12 @@ public function displayForm() {
 
     public function hookDisplayHome($params) {
         // Assigns value from to the form to the frontend
+
+            
         $this->context->smarty->assign([
-            'text_from_form' => html_entity_decode(Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG')))
+          // 'text_from_form' => html_entity_decode(Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG')))
+         'title' =>  'Treść do edycji w panelu administracyjnym'
+
         ]);
 
         return $this->display(__FILE__, 'displayHome.tpl');
@@ -125,6 +133,9 @@ public function displayForm() {
     public function hookActionFrontControllerSetMedia() {
         // Registering css file for the module
         $this->context->controller->addCSS($this->_path.'views/css/style.css', 'all');
+   
+    $this->context->controller->addJS($this->_path . 'views/js/main.js');
+  
     }
 
 }
