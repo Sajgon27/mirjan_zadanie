@@ -39,6 +39,7 @@ class MyModule extends Module {
         return parent::install() &&
             $this->registerHook('displayLeftColumn') &&
             $this->registerHook('displayHome') &&
+            $this->registerHook('header') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             Configuration::updateValue('MYMODULE_NAME', 'my friend');
     }
@@ -71,71 +72,107 @@ class MyModule extends Module {
 
         // Displays any message and the form
         return $output . $this->displayForm();
-}
+    }
 
-public function displayForm() {
-    // Form settings on module page
-    $form = [
-        'form' => [
-            'legend' => [
-                'title' => $this->l('Settings'),
-            ],
-            'input' => [
-                [
-                    'type' => 'textarea',
-                    'class' => 'rte',
-                    'autoload_rte' => true, 
-                    'label' => $this->l('Configuration value'),
-                    'name' => 'MYMODULE_CONFIG',
-                    'size' => 20,
-                    'required' => true,
+    public function displayForm() {
+
+        $categoriesOptions = $this->getCategoriesOptions();
+        $form = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->l('Settings'),
+                ],
+                'input' => [
+                    [
+                        'type' => 'select',
+                        'label' => $this->l('Wybierz kategorię produktów na slider:'),
+                        'name' => 'MYMODULE_CONFIG',
+                        'options' => [
+                            'query' => $categoriesOptions, 
+                            'id' => 'id_category',         
+                            'name' => 'name',             
+                        ],
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                    'class' => 'btn btn-default pull-right',
                 ],
             ],
-            'submit' => [
-                'title' => $this->l('Save'),
-                'class' => 'btn btn-default pull-right',
-            ],
-        ],
-    ];
-    $helper = new HelperForm();
+        ];
 
-   
+        $helper = new HelperForm();
 
-    // Module, token and currentIndex
-    $helper->table = $this->table;
-    $helper->name_controller = $this->name;
-    $helper->token = Tools::getAdminTokenLite('AdminModules');
-    $helper->currentIndex = AdminController::$currentIndex . '&' . http_build_query(['configure' => $this->name]);
-    $helper->submit_action = 'submit' . $this->name;
+        // Module, token and currentIndex
+        $helper->table = $this->table;
+        $helper->name_controller = $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex . '&' . http_build_query(['configure' => $this->name]);
+        $helper->submit_action = 'submit' . $this->name;
 
-    // Default language
-    $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
+        // Default language
+        $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
 
-    // Loads current value into the form
-    $helper->fields_value['MYMODULE_CONFIG'] = html_entity_decode(Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG')));
-    return $helper->generateForm([$form]);
-}
+        // Loads current value into the form
+        $helper->fields_value['MYMODULE_CONFIG'] = html_entity_decode(Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG')));
+        return $helper->generateForm([$form]);
+    }
 
+    protected function getCategoriesOptions() {
+        // Load categories based on current language
+        $languageId = $this->context->language->id;
+        $categories = Category::getCategories($languageId, true, false);
+
+        // Format categories for select input
+        $categoriesOptions = [];
+        foreach ($categories as $category) {
+            $categoriesOptions[] = [
+                'id_category' => $category['id_category'],
+                'name' => $category['name']
+            ];
+        }
+        return $categoriesOptions;
+    }
 
     public function hookDisplayHome($params) {
-        // Assigns value from to the form to the frontend
-
-            
+        $languageId = Context::getContext()->language->id;
+        $categoryId = Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG'));
+        $categoryObj = new Category($categoryId, $languageId);
+        $categoryName = $categoryObj->name;
         $this->context->smarty->assign([
-          // 'text_from_form' => html_entity_decode(Tools::getValue('MYMODULE_CONFIG', Configuration::get('MYMODULE_CONFIG')))
-         'title' =>  'Treść do edycji w panelu administracyjnym'
-
+         'title' =>  'Najlepsze produkty z kategorii ' . $categoryName ,
         ]);
-
         return $this->display(__FILE__, 'displayHome.tpl');
     }
 
     public function hookActionFrontControllerSetMedia() {
         // Registering css file for the module
         $this->context->controller->addCSS($this->_path.'views/css/style.css', 'all');
-   
-    $this->context->controller->addJS($this->_path . 'views/js/main.js');
-  
+        $this->context->controller->addJS($this->_path . 'views/js/mymodule.js');
     }
+
+    public function hookHeader($params) {
+     // Add glide.js
+     $this->context->controller->registerJavascript(
+        'cdn-glide',
+        'https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/glide.min.js',
+        [
+            'server' => 'remote',
+            'position' => 'bottom',
+            'priority' => 499,
+        ]
+    );
+
+    // Register glide css
+    $this->context->controller->registerStylesheet(
+        'cdn-stylesheet',
+        'https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.1/dist/css/glide.core.min.css',
+        [
+            'server' => 'remote',  
+            'media' => 'all',
+            'priority' => 150,
+        ]
+    );
+}
 
 }

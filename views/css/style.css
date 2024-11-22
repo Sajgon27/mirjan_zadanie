@@ -3,3 +3,115 @@
     padding: 50px !important;
     background-color: white;
 }
+.slider-title {
+    font-size: 28px;
+    font-weight: bold;;
+}
+.sm-text-container {
+    margin-top:30px;
+}
+
+/* PRODUCT SLIDER  */
+.product-slider {
+    padding: 10px;
+
+}
+
+.seemore-btn-slider {
+    padding: 18px 25px;
+    background-color: #d12a2a;
+    border-radius: 5px;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+.seemore-btn-slider:hover {
+    background-color: #f01515;
+    color: white;
+    transition: 0.2s all;
+}
+
+.product-slider img {
+    object-fit: cover;
+    max-height: 200px;
+    width:100%;
+    border-radius: 4px;
+}
+
+.product-slider .slider-product-title {
+    text-align: left;
+    margin-top: 10px;
+    color: black;
+}
+
+.product-slider .slider-price {
+    width: 100%;
+    text-align: left;
+    font-weight: bold;
+}
+
+.arrow-slider {
+    width:50px;
+    cursor: pointer;
+}
+.arrow-slider:focus-visible , .arrow-slider:focus, .glide__arrow:focus, .glide__arrow:focus-visible {
+    outline: none;
+}
+.arrow-slider:hover {
+    transform: scale(1.08);
+    transition: 0.4s all;
+}
+.glide__arrow {
+    background-color: transparent !important;
+    border: 0 !important;
+    position: absolute;
+    top: 30%;
+}
+.glide__arrow--right {
+    right:0;
+}
+.glide__arrow--left {
+    left:0;
+}
+
+.glide__track {
+    margin-bottom: 35px;
+}
+
+.stock-status-slider {
+    position: absolute;
+    background-color: #43a743;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    border-bottom-right-radius: 10px;
+}
+
+.hidden {
+    opacity:0 !important;
+    transition: 0.6s all;
+}
+.short-desc {
+    background-color: #ffffffcf;
+    color: black !important;
+    position: absolute;
+    top: 0;
+    padding: 15px 5px 5px 5px;
+    width: 90%;
+    left: 0;
+    margin: auto;
+    right: 0;
+    border-radius: 10px;
+    transition: 0.6s all;
+    opacity:1;
+}
+.short-desc * {
+    color: black !important;
+    font-weight: 600;
+    font-size: 12px !important;
+}
+.glide__slide a {
+    position: relative;
+}
